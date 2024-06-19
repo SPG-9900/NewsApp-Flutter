@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newsapp/providers/news_provider.dart';
-import 'package:newsapp/screens/article_details_screen.dart';
 import 'package:newsapp/screens/bookmark_screen.dart';
+import 'package:newsapp/widgets/article_card.dart';
 import 'package:newsapp/widgets/custom_loading_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -96,9 +96,13 @@ class HomeContentScreen extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       controller: _searchController,
+                      onChanged: (String value) {
+                        newsProvider.fetchArticles(value);
+                      },
                       decoration: const InputDecoration(
                         hintText: 'Search',
                         border: InputBorder.none,
+                        prefixIcon: Icon(Icons.search),
                       ),
                     ),
                   ),
@@ -158,49 +162,7 @@ class HomeContentScreen extends StatelessWidget {
                   itemCount: newsProvider.articles.length,
                   itemBuilder: (context, index) {
                     final article = newsProvider.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ArticleDetailsScreen(article),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        color: Colors.grey.shade300,
-                        margin: const EdgeInsets.all(8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (article.urlToImage.isNotEmpty)
-                                Hero(
-                                  tag: article.urlToImage,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      article.urlToImage,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: 200,
-                                    ),
-                                  ),
-                                ),
-                              const SizedBox(height: 8),
-                              Text(
-                                article.title,
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(article.description),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
+                    return ArticleCard(article: article);
                   },
                 ),
         ),
